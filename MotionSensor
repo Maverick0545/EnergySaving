@@ -1,0 +1,64 @@
+int inputPin = D4;              
+int ledPin = D7;                
+int pirState = LOW;             
+int val = 0;
+int ledout = D6;
+int calibrateTime = 10000;      
+
+void setup()
+{
+    pinMode( ledPin, OUTPUT );
+    pinMode(inputPin, INPUT);   
+    pinMode(ledout, OUTPUT);
+    digitalWrite(ledout, LOW);
+    Particle.subscribe("maverick", myHandler, "43001b001951353337343731");
+}
+
+void loop()
+{
+    if ( calibrated() )
+        {
+           readTheSensor();
+           reportTheData();
+        }
+}
+
+void readTheSensor() 
+{
+    val = digitalRead(inputPin);
+}
+
+bool calibrated() 
+{
+    return millis() - calibrateTime > 0;
+}
+
+void reportTheData() 
+{
+    if (val == HIGH) 
+        {
+            Particle.publish("babayaga", "1"); 
+            pirState = HIGH;
+            setLED( pirState );
+            delay(60000);
+        } 
+
+    else 
+        {   Particle.publish("babayaga","0");
+            pirState = LOW;
+            setLED( pirState );
+            delay(10000);
+        }
+}
+
+void setLED( int state )
+{
+    digitalWrite( ledPin, state );
+}
+
+void myHandler(const char *event, const char *data)
+{
+    digitalWrite(ledout, HIGH);
+    delay(5000);
+    digitalWrite(ledout, LOW);
+}
