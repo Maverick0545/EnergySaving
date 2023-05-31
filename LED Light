@@ -1,0 +1,26 @@
+int led = D7;
+
+void setup()
+{
+    pinMode(led, OUTPUT);
+    digitalWrite(led, LOW);
+    
+    Particle.subscribe("babayaga", myHandler, "43001b001951353337343731");
+
+}
+
+void myHandler(const char *event, const char *data)
+{
+    if (strcmp(data,"1")==0) 
+    {
+      digitalWrite(led, HIGH);
+      Particle.publish("maverick","1");
+    
+    }else if (strcmp(data,"0")==0) 
+    {
+          digitalWrite(led, LOW);
+
+    }
+  
+}
+  
